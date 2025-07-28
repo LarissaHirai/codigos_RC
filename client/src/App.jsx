@@ -28,6 +28,8 @@ function App() {
   const [messageList, setMessageList] = useState([]);
   const bottomRef = useRef();
   const signalApplied = useRef(false);
+  const [lastChatTarget, setLastChatTarget] = useState("");
+  const [chatTargetId, setChatTargetId] = useState("");
 
   useEffect(() => {
     navigator.mediaDevices
@@ -137,14 +139,29 @@ function App() {
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setMessageList((prev) => [...prev, data]);
+      setLastChatTarget(data.authorId); // grava quem mandou como alvo da conversa
     });
+
     return () => socket.off("receive_message");
   }, []);
 
   const handleSubmit = () => {
     const message = messageRef.current.value;
-    if (!message.trim()) return;
-    socket.emit("message", message);
+    const destinationId = chatTargetId || lastChatTarget;
+
+    if (!message.trim() || !destinationId) return;
+
+    socket.emit("message", {
+      to: destinationId,
+      text: message,
+    });
+
+    setLastChatTarget(destinationId); // registra o destino como última conversa
+    setMessageList((prev) => [
+      ...prev,
+      { text: message, authorId: socket.id, targetId: destinationId },
+    ]);
+
     messageRef.current.value = "";
     messageRef.current.focus();
   };
@@ -159,8 +176,8 @@ function App() {
 
   return (
     <>
-      <h1 style={{ textAlign: "center", color: "#fff" }}>Meet</h1>
-      <hr class="white-line" />
+      <h1 style={{ textAlign: "center", color: "#fff" }}>Video Meet</h1>
+      <hr className="white-line" />
       <div className="container">
         <div className="video-container">
           <div className="video">
@@ -209,6 +226,15 @@ function App() {
             value={idToCall}
             onChange={(e) => setIdToCall(e.target.value)}
           />
+
+          <TextField
+            label="ID to chat"
+            variant="filled"
+            value={chatTargetId}
+            onChange={(e) => setChatTargetId(e.target.value)}
+            placeholder={lastChatTarget || "Enter ID to chat"}
+            style={{ marginTop: "20px", marginBottom: "10px" }}
+          />
           <div className="call-button">
             {callAccepted && !callEnded ? (
               <Button variant="contained" color="secondary" onClick={leaveCall}>
@@ -234,6 +260,24 @@ function App() {
         <div>
           <div className="chat-container">
             <h1 className="chat-title">Chat</h1>
+            <p
+              style={{
+                color: "#c0c0c0",
+                textAlign: "center",
+                fontSize: "15px",
+                marginBottom: "10px",
+                marginTop: 0,
+              }}
+            >
+              Chatting with:{" "}
+              <strong
+                style={{
+                  color: "#aaaaaaff",
+                }}
+              >
+                {chatTargetId || lastChatTarget || "Nobody yet"}
+              </strong>
+            </p>
             <div className="chat-body">
               {messageList.map((message, index) => (
                 <div
