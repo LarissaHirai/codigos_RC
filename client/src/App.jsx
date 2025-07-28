@@ -91,9 +91,21 @@ function App() {
     // Responde a uma chamada recebida
     setCallAccepted(true);
     const peer = new Peer({
-      initiator: false,
+      initiator: false, // ou false no answerCall
       trickle: false,
       stream: stream,
+      config: {
+        iceServers: [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+        ],
+      },
     });
 
     // Evento 'signal': Envia os dados de sinalização para o servidor
