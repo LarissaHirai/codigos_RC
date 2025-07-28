@@ -10,7 +10,7 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 
 // Conexão do socket
-const socket = io.connect("https://wondrous-capybara-495e07.netlify.app/");
+const socket = io.connect("https://codigos-rc.onrender.com");
 
 function App() {
   // Definição dos estados
