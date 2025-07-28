@@ -19,10 +19,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (reason) => {
     console.log("Usuário desconectado!", socket.id); // Imprime no console que um usuário se desconectou
   });
-
-  socket.on("disconnect", () => {
-    socket.broadcast.emit("callEnded"); // Emite um evento para todos os clientes informando que a chamada foi encerrada
+  socket.on("endCall", () => {
+    socket.broadcast.emit("callEnded");
   });
+  /*socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded"); // Emite um evento para todos os clientes informando que a chamada foi encerrada
+  });*/
 
   socket.on("callUser", (data) => {
     io.to(data.userToCall).emit("callUser", {
@@ -35,18 +37,6 @@ io.on("connection", (socket) => {
   socket.on("answerCall", (data) => {
     io.to(data.to).emit("callAccepted", data.signal); // Emite um evento para o cliente específico informando que a chamada foi aceita
   });
-
-  useEffect(() => {
-    socket.on("callEnded", () => {
-      setCallEnded(true);
-      connectionRef.current?.destroy();
-      connectionRef.current = null;
-    });
-
-    return () => {
-      socket.off("callEnded");
-    };
-  }, []);
 
   socket.on("message", (text) => {
     io.emit("receive_message", {
