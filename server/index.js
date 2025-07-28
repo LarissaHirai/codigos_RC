@@ -2,7 +2,7 @@ const app = require("express")(); // Importa o módulo express e cria a instânc
 const server = require("http").createServer(app); // Cria o servidor HTTP usando o app
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://unrivaled-bublanina-b3a0b2.netlify.app/",
+    origin: "https://wondrous-capybara-495e07.netlify.app/",
     methods: ["GET", "POST"],
   },
 }); // Cria a instância do Socket.IO e define as configurações de CORS
