@@ -27,15 +27,13 @@ function App() {
   const messageRef = useRef();
   const [messageList, setMessageList] = useState([]);
   const bottomRef = useRef();
+  const signalApplied = useRef(false);
 
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((currentStream) => {
         setStream(currentStream);
-        if (myVideo.current) {
-          myVideo.current.srcObject = currentStream;
-        }
       });
 
     socket.on("me", (id) => setMe(id));
@@ -48,12 +46,23 @@ function App() {
     });
 
     socket.on("callAccepted", (signal) => {
-      if (connectionRef.current && !connectionRef.current.destroyed) {
+      if (
+        connectionRef.current &&
+        !connectionRef.current.destroyed &&
+        !signalApplied.current
+      ) {
         setCallAccepted(true);
         connectionRef.current.signal(signal);
+        signalApplied.current = true;
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (myVideo.current && stream) {
+      myVideo.current.srcObject = stream;
+    }
+  }, [stream]);
 
   const callUser = (id) => {
     const peer = new Peer({
@@ -122,6 +131,7 @@ function App() {
     setCallEnded(true);
     connectionRef.current?.destroy();
     connectionRef.current = null;
+    signalApplied.current = false;
   };
 
   useEffect(() => {
@@ -150,6 +160,7 @@ function App() {
   return (
     <>
       <h1 style={{ textAlign: "center", color: "#fff" }}>Meet</h1>
+      <hr class="white-line" />
       <div className="container">
         <div className="video-container">
           <div className="video">
@@ -246,7 +257,6 @@ function App() {
                 placeholder="Mensagem"
                 onKeyDown={getEnterKey}
               />
-              <br />
               <button className="botao" onClick={handleSubmit}>
                 Enviar
               </button>
