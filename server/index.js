@@ -6,7 +6,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 }); // Cria a instância do Socket.IO e define as configurações de CORS
-const PORT = 8000; // Porta do servidor
+const PORT = process.env.PORT || 8000; // Porta do servidor
 
 io.on("connection", (socket) => {
   socket.emit("me", socket.id); // Envia o ID do socket para o cliente
