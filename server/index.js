@@ -35,11 +35,11 @@ io.on("connection", (socket) => {
     io.to(data.to).emit("callAccepted", data.signal); // Emite um evento para o cliente específico informando que a chamada foi aceita
   });
 
-  socket.on("message", (text) => {
-    io.emit("receive_message", {
-      // Emite um evento para todos os clientes informando a mensagem recebida
+  socket.on("message", ({ to, text }) => {
+    io.to(to).emit("receive_message", {
       text,
       authorId: socket.id,
+      targetId: to,
     });
   });
 });
