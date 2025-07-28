@@ -19,12 +19,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (reason) => {
     console.log("Usuário desconectado!", socket.id); // Imprime no console que um usuário se desconectou
   });
-  socket.on("endCall", () => {
-    socket.broadcast.emit("callEnded");
-  });
-  /*socket.on("disconnect", () => {
+  socket.on("disconnect", () => {
     socket.broadcast.emit("callEnded"); // Emite um evento para todos os clientes informando que a chamada foi encerrada
-  });*/
+  });
 
   socket.on("callUser", (data) => {
     io.to(data.userToCall).emit("callUser", {
