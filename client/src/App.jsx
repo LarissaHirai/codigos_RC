@@ -202,49 +202,110 @@ function App() {
             )}
           </div>
         </div>
-        <div className="myId">
-          <TextField
-            label="Name"
-            variant="filled"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={{ marginBottom: "20px" }}
-          />
-          <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AssignmentIcon fontSize="large" />}
-            >
-              Copy ID
-            </Button>
-          </CopyToClipboard>
+        <div className="side-panel">
+          <div className="side-content">
+            <div className="myId">
+              <TextField
+                label="Name"
+                variant="filled"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{ marginBottom: "20px" }}
+                required
+              />
+              <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AssignmentIcon fontSize="large" />}
+                >
+                  Copy ID
+                </Button>
+              </CopyToClipboard>
 
-          <TextField
-            label="ID to call"
-            variant="filled"
-            value={idToCall}
-            onChange={(e) => setIdToCall(e.target.value)}
-          />
+              <TextField
+                label="ID to call"
+                variant="filled"
+                value={idToCall}
+                onChange={(e) => setIdToCall(e.target.value)}
+                required
+              />
 
-          <TextField
-            label="ID to chat"
-            variant="filled"
-            value={chatTargetId}
-            onChange={(e) => setChatTargetId(e.target.value)}
-            placeholder={lastChatTarget || "Enter ID to chat"}
-            style={{ marginTop: "20px", marginBottom: "10px" }}
-          />
-          <div className="call-button">
-            {callAccepted && !callEnded ? (
-              <Button variant="contained" color="secondary" onClick={leaveCall}>
-                End Call
-              </Button>
-            ) : (
-              <IconButton color="primary" onClick={() => callUser(idToCall)}>
-                <PhoneIcon fontSize="large" />
-              </IconButton>
-            )}
+              <TextField
+                label="ID to chat"
+                variant="filled"
+                value={chatTargetId}
+                onChange={(e) => setChatTargetId(e.target.value)}
+                placeholder={lastChatTarget || "Enter ID to chat"}
+                style={{ marginTop: "20px", marginBottom: "10px" }}
+              />
+              <div className="call-button">
+                {callAccepted && !callEnded ? (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={leaveCall}
+                  >
+                    End Call
+                  </Button>
+                ) : (
+                  <IconButton
+                    color="primary"
+                    onClick={() => callUser(idToCall)}
+                  >
+                    <PhoneIcon fontSize="large" />
+                  </IconButton>
+                )}
+              </div>
+            </div>
+            <div className="chat-container fade-in">
+              <h1 className="chat-title">Chat</h1>
+              <p
+                style={{
+                  color: "#c0c0c0",
+                  textAlign: "center",
+                  fontSize: "15px",
+                  marginBottom: "10px",
+                  marginTop: 0,
+                }}
+              >
+                Chatting with:{" "}
+                <strong
+                  style={{
+                    color: "#aaaaaaff",
+                  }}
+                >
+                  {chatTargetId || lastChatTarget || "Nobody yet"}
+                </strong>
+              </p>
+              <div className="chat-body">
+                {messageList.map((message, index) => (
+                  <div
+                    key={index}
+                    className={
+                      message.authorId === socket.id
+                        ? "message-aux message-mine"
+                        : "message-container"
+                    }
+                  >
+                    <div className="message-text">{message.text}</div>
+                  </div>
+                ))}
+                <div ref={bottomRef} />
+              </div>
+              <div className="chat-footer">
+                <input
+                  className="mensagem"
+                  type="text"
+                  ref={messageRef}
+                  placeholder="Mensagem"
+                  onKeyDown={getEnterKey}
+                />
+                <button className="botao" onClick={handleSubmit}>
+                  Enviar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div>
@@ -257,56 +318,7 @@ function App() {
             </div>
           )}
         </div>
-        <div>
-          <div className="chat-container">
-            <h1 className="chat-title">Chat</h1>
-            <p
-              style={{
-                color: "#c0c0c0",
-                textAlign: "center",
-                fontSize: "15px",
-                marginBottom: "10px",
-                marginTop: 0,
-              }}
-            >
-              Chatting with:{" "}
-              <strong
-                style={{
-                  color: "#aaaaaaff",
-                }}
-              >
-                {chatTargetId || lastChatTarget || "Nobody yet"}
-              </strong>
-            </p>
-            <div className="chat-body">
-              {messageList.map((message, index) => (
-                <div
-                  key={index}
-                  className={
-                    message.authorId === socket.id
-                      ? "message-aux message-mine"
-                      : "message-container"
-                  }
-                >
-                  <div className="message-text">{message.text}</div>
-                </div>
-              ))}
-              <div ref={bottomRef} />
-            </div>
-            <div className="chat-footer">
-              <input
-                className="mensagem"
-                type="text"
-                ref={messageRef}
-                placeholder="Mensagem"
-                onKeyDown={getEnterKey}
-              />
-              <button className="botao" onClick={handleSubmit}>
-                Enviar
-              </button>
-            </div>
-          </div>
-        </div>
+        <div></div>
       </div>
     </>
   );
