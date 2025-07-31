@@ -176,70 +176,107 @@ function App() {
 
   return (
     <>
-      <h1 style={{ textAlign: "center", color: "#fff" }}>Video Meet</h1>
-      <hr className="white-line" />
-      <div className="container">
-        <div className="video-container">
-          <div className="video">
-            {stream && (
-              <video
-                playsInline
-                muted
-                ref={myVideo}
-                autoPlay
-                style={{ width: "300px" }}
-              />
-            )}
-          </div>
-          <div className="video">
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-cyan-100 px-4 py-6">
+        {/* Título e Info da Chamada */}
+        <header className="text-center mb-8">
+          <h1 className="font-semibold text-5xl sm:text-6xl md:text-7xl text-slate-600">
+            Video
+            <span className="text-indigo-500 bold">Meet</span>
+          </h1>
+          {receivingCall && !callAccepted && (
+            <div className="mt-4 bg-yellow-200 text-yellow-900 px-4 py-2 rounded shadow-md inline-block">
+              <h2 className="font-semibold">{name} is calling...</h2>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={answerCall}
+                className="ml-4"
+              >
+                Answer
+              </Button>
+            </div>
+          )}
+        </header>
+
+        {/* Área de Conteúdo */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Vídeos */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center">
+            {/* Seu vídeo */}
+            <div className="bg-black rounded-lg overflow-hidden shadow-md flex justify-center items-center aspect-video">
+              {stream && (
+                <video
+                  playsInline
+                  muted
+                  ref={myVideo}
+                  autoPlay
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+
+            {/* Vídeo do outro */}
+
             {callAccepted && !callEnded && (
-              <video
-                playsInline
-                ref={userVideo}
-                autoPlay
-                style={{ width: "300px" }}
-              />
+              <div className="bg-black rounded-lg overflow-hidden shadow-md flex justify-center items-center aspect-video">
+                <video
+                  playsInline
+                  ref={userVideo}
+                  autoPlay
+                  className="w-full h-full object-cover"
+                />
+              </div>
             )}
           </div>
-        </div>
-        <div className="side-panel">
-          <div className="side-content">
-            <div className="myId">
-              <TextField
-                label="Name"
-                variant="filled"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ marginBottom: "20px" }}
-                required
-              />
-              <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AssignmentIcon fontSize="large" />}
-                >
-                  Copy ID
-                </Button>
-              </CopyToClipboard>
 
-              <TextField
-                label="ID to call"
-                variant="filled"
-                value={idToCall}
-                onChange={(e) => setIdToCall(e.target.value)}
-                required
-              />
-
-              <TextField
-                label="ID to chat"
-                variant="filled"
-                value={chatTargetId}
-                onChange={(e) => setChatTargetId(e.target.value)}
-                placeholder={lastChatTarget || "Enter ID to chat"}
-                style={{ marginTop: "20px", marginBottom: "10px" }}
-              />
-              <div className="call-button">
+          {/* Painel Lateral */}
+          <div className="w-full lg:w-[350px] bg-white rounded-lg shadow-md p-4 space-y-6">
+            {/* ID e Chamadas */}
+            <div>
+              <div className="mb-3">
+                <TextField
+                  label="Name"
+                  variant="filled"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  fullWidth
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <CopyToClipboard text={me}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="w-full mb-4"
+                    startIcon={<AssignmentIcon />}
+                    fullWidth
+                  >
+                    Copy ID
+                  </Button>
+                </CopyToClipboard>
+              </div>
+              <div className="mb-1">
+                <TextField
+                  label="ID to call"
+                  variant="filled"
+                  value={idToCall}
+                  onChange={(e) => setIdToCall(e.target.value)}
+                  className="w-full mt-4"
+                  required
+                />
+              </div>
+              <div className="mb-1">
+                <TextField
+                  label="ID to chat"
+                  variant="filled"
+                  value={chatTargetId}
+                  onChange={(e) => setChatTargetId(e.target.value)}
+                  placeholder={lastChatTarget || "Enter ID to chat"}
+                  className="w-full mt-4"
+                />
+              </div>
+              <div className="mt-2 text-center">
                 {callAccepted && !callEnded ? (
                   <Button
                     variant="contained"
@@ -258,67 +295,50 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="chat-container fade-in">
-              <h1 className="chat-title">Chat</h1>
-              <p
-                style={{
-                  color: "#c0c0c0",
-                  textAlign: "center",
-                  fontSize: "15px",
-                  marginBottom: "10px",
-                  marginTop: 0,
-                }}
-              >
+
+            {/* Chat */}
+            <div className="bg-gray-100 rounded p-3 h-[300px] flex flex-col">
+              <h2 className="text-lg font-bold mb-2 text-gray-700">💬 Chat</h2>
+              <p className="text-sm text-gray-500 mb-2 text-center">
                 Chatting with:{" "}
-                <strong
-                  style={{
-                    color: "#aaaaaaff",
-                  }}
-                >
+                <strong className="text-gray-700">
                   {chatTargetId || lastChatTarget || "Nobody yet"}
                 </strong>
               </p>
-              <div className="chat-body">
+              <div className="flex-1 overflow-y-auto space-y-2 px-1">
                 {messageList.map((message, index) => (
                   <div
                     key={index}
-                    className={
+                    className={`px-3 py-1 rounded-lg max-w-fit ${
                       message.authorId === socket.id
-                        ? "message-aux message-mine"
-                        : "message-container"
-                    }
+                        ? "bg-blue-500 text-white ml-auto"
+                        : "bg-white border text-gray-700"
+                    }`}
                   >
-                    <div className="message-text">{message.text}</div>
+                    {message.text}
                   </div>
                 ))}
                 <div ref={bottomRef} />
               </div>
-              <div className="chat-footer">
+              <div className="mt-2 flex gap-2">
                 <input
-                  className="mensagem"
                   type="text"
                   ref={messageRef}
+                  className="flex-1 border rounded px-2 py-1 text-sm text-black"
                   placeholder="Mensagem"
                   onKeyDown={getEnterKey}
                 />
-                <button className="botao" onClick={handleSubmit}>
-                  Enviar
+                <button
+                  onClick={handleSubmit}
+                  color="primary"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                >
+                  Enter
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div>
-          {receivingCall && !callAccepted && (
-            <div className="caller">
-              <h1>{name} is calling...</h1>
-              <Button variant="contained" color="primary" onClick={answerCall}>
-                Answer
-              </Button>
-            </div>
-          )}
-        </div>
-        <div></div>
       </div>
     </>
   );
